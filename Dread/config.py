@@ -5,7 +5,7 @@ Created on Fri Sep 16 19:21:15 2022
 @author: No-Reality-Shows
 """
 
-from Dread import functions
+import functions
 
 
 ##############################################################################

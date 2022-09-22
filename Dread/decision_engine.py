@@ -9,7 +9,7 @@ Created on Fri Sep 16 14:47:18 2022
 import numpy as np
 import operator
 from functools import reduce
-from Dread import utils
+utils
 
 ###############################################################################
 #DataModel class

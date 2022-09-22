@@ -9,8 +9,8 @@ import os
 import pandas as pd
 import re
 import joblib
-from Dread import utils
-from Dread import decision_engine
+utils
+decision_engine
 
 ##############################################################################
 #function to build rule engine using config files
