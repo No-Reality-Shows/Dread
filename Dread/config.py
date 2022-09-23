@@ -5,7 +5,7 @@ Created on Fri Sep 16 19:21:15 2022
 @author: No-Reality-Shows
 """
 
-from Dread import functions
+import Dread.functions
 
 ##############################################################################
 #general config
@@ -27,14 +27,14 @@ LOGGER_PROPAGATE = False
 #linked to specific actions within the rule engine
 ##############################################################################
 
-ACTION_CONFIG = {'get_time':{'action_function':functions.get_current_utc_time,
+ACTION_CONFIG = {'get_time':{'action_function':Dread.functions.get_current_utc_time,
                              'params':'{}'}}
 
 ##############################################################################
 #evaluation config
 ##############################################################################
 
-EXTERNAL_MODULES = ['math','re','datetime','Dread.functions']
+EXTERNAL_MODULES = ['math','re','datetime','Dread']
 
 ALLOWED_BUILTINS = {'ArithmeticError': ArithmeticError,
   'AssertionError': AssertionError,
