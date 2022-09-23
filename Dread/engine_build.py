@@ -61,7 +61,7 @@ def build(directory=None):
                 params = attribute.to_dict()
                 params['attribute_path'] = params['attribute_path'].split(',')
                 params['dtype'] = eval(params['dtype'],{"__builtins__": {}}, utils.EVAL_CONFIG)
-                params['default'] = params['dtype'](params['default'])
+                params['default'] = params['dtype'](params.get('default'))
                 #add attribute to engine
                 engine.data_model.add_attribute(**params)
                 print("\t\tAttribute '{ATTRIBUTE}' added to data model".format(ATTRIBUTE=params['name']))
@@ -83,7 +83,7 @@ def build(directory=None):
                 #get params
                 params = expression.to_dict()
                 params['dtype'] = eval(params['dtype'],{"__builtins__": {}}, utils.EVAL_CONFIG)
-                params['default'] = params['dtype'](params['default'])
+                params['default'] = params['dtype'](params.get('default'))
                 #add expression to engine
                 engine.data_model.add_expression(**params)
                 print("\t\tExpression '{EXPRESSION}' added to data model".format(EXPRESSION=params['name']))
