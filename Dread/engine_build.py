@@ -59,7 +59,7 @@ def build(directory=None):
             for index, attribute in attributes.iterrows():
                 #get params
                 params = attribute.to_dict()
-                params['attribute_path'] = re.sub("[^A-Za-z0-9,]",'',params['attribute_path']).split(',')
+                params['attribute_path'] = params['attribute_path'].split(',')
                 params['dtype'] = eval(params['dtype'],{"__builtins__": {}}, utils.EVAL_CONFIG)
                 params['default'] = params['dtype'](params['default'])
                 #add attribute to engine
