@@ -115,9 +115,8 @@ def build(directory=None):
                     ruleset = pd.read_csv(file_path)
                     #fill nas with None
                     ruleset = ruleset.where(pd.notnull(ruleset), None)
-                    #drop empty rows and columns
+                    #drop empty rows
                     ruleset = ruleset.dropna(axis=0, how = 'all')
-                    ruleset = ruleset.dropna(axis=1, how = 'all')
                     #join rule logic
                     ruleset['logic'] = '('+ruleset.drop(['name', 'score', 'flag'], axis = 1).astype(str).agg(') and ('.join, axis=1)+')'
                     #add rules to ruleset
@@ -186,8 +185,7 @@ def build(directory=None):
                     #fill nas with None
                     pipeline = pipeline.where(pd.notnull(pipeline), None)
                     #drop empty rows and columns
-                    pipeline = pipeline.dropna(axis=0, how = 'all')
-                    pipeline = pipeline.dropna(axis=1, how = 'all')
+                    #pipeline = pipeline.dropna(axis=0, how = 'all')
                     #convert dataframe to dict list
                     pipeline_ls = []
                     for index, ruleset in pipeline.iterrows():
