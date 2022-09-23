@@ -7,7 +7,7 @@ Created on Wed Sep 21 11:17:48 2022
 
 import os
 import pandas as pd
-import utils
+from Dread import utils
 
 ##############################################################################
 #template files

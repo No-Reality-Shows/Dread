@@ -5,7 +5,7 @@ Created on Fri Sep 16 19:21:15 2022
 @author: No-Reality-Shows
 """
 
-import functions
+from Dread import functions
 
 ##############################################################################
 #general config
@@ -34,7 +34,7 @@ ACTION_CONFIG = {'get_time':{'action_function':functions.get_current_utc_time,
 #evaluation config
 ##############################################################################
 
-EXTERNAL_MODULES = ['math','re','datetime','functions']
+EXTERNAL_MODULES = ['math','re','datetime','Dread.functions']
 
 ALLOWED_BUILTINS = {'ArithmeticError': ArithmeticError,
   'AssertionError': AssertionError,

@@ -9,7 +9,7 @@ Created on Fri Sep 16 19:39:46 2022
 import logging
 
 #for config
-import config
+from Dread import config
 
 ##############################################################################
 #logger
