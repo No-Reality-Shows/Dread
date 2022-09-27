@@ -59,13 +59,18 @@ def build(directory=None):
             for index, attribute in attributes.iterrows():
                 #get params
                 params = attribute.to_dict()
-                params['attribute_path'] = params['attribute_path'].split(',')
+                params['attribute_path'] = re.sub('(,( +)?)',',',params['attribute_path']).split(',')
                 params['dtype'] = eval(params['dtype'],{"__builtins__": {}}, utils.EVAL_CONFIG)
-                params['default'] = params['dtype'](params.get('default'))
+                if params.get('default') == None:
+                    params['default'] = None
+                elif params['dtype'] in [list, dict, set, tuple, frozenset]:
+                    params['default'] = params['dtype'](eval(str(params.get('default')),{"__builtins__": {}}, utils.EVAL_CONFIG))
+                else:
+                    params['default'] = params['dtype'](params.get('default'))
                 #add attribute to engine
                 engine.data_model.add_attribute(**params)
                 print("\t\tAttribute '{ATTRIBUTE}' added to data model".format(ATTRIBUTE=params['name']))
-                
+            
             ##################################################################
             #add expressions
             ##################################################################
@@ -83,11 +88,15 @@ def build(directory=None):
                 #get params
                 params = expression.to_dict()
                 params['dtype'] = eval(params['dtype'],{"__builtins__": {}}, utils.EVAL_CONFIG)
-                params['default'] = params['dtype'](params.get('default'))
+                if params.get('default') == None:
+                    params['default'] = None
+                elif params['dtype'] in [list, dict, set, tuple, frozenset]:
+                    params['default'] = params['dtype'](eval(str(params.get('default')),{"__builtins__": {}}, utils.EVAL_CONFIG))
+                else:
+                    params['default'] = params['dtype'](params.get('default'))
                 #add expression to engine
                 engine.data_model.add_expression(**params)
                 print("\t\tExpression '{EXPRESSION}' added to data model".format(EXPRESSION=params['name']))
-                
         except:
             utils.logger.exception('An error occured while building DataModel')
             
@@ -103,7 +112,6 @@ def build(directory=None):
             #get folder files
             path = '/'.join([build_dir,'LogicModel'])
             files = os.listdir(path)
-            
             for file in files:
                 file_path = '/'.join([path, file])
                 if os.path.isfile(file_path) and bool(re.match('.*.csv$', file_path)):
@@ -118,7 +126,8 @@ def build(directory=None):
                     #drop empty rows
                     ruleset = ruleset.dropna(axis=0, how = 'all')
                     #join rule logic
-                    ruleset['logic'] = '('+ruleset.drop(['name', 'score', 'flag'], axis = 1).astype(str).agg(') and ('.join, axis=1)+')'
+                    ruleset['logic'] = ruleset.drop(['name', 'score', 'flag'], axis = 1).apply(lambda x: '('+x.dropna().astype(str).str.cat(sep=') and (')+')', axis = 1)
+                    
                     #add rules to ruleset
                     for index, rule in ruleset.iterrows():
                         params = rule[['name', 'score', 'flag','logic']].to_dict()
@@ -174,7 +183,6 @@ def build(directory=None):
             #get folder files
             path = '/'.join([build_dir,'LogicPipelines'])
             files = os.listdir(path)
-            
             for file in files:
                 file_path = '/'.join([path, file])
                 if os.path.isfile(file_path) and bool(re.match('.*.csv$', file_path)):
@@ -184,6 +192,8 @@ def build(directory=None):
                     pipeline = pd.read_csv(file_path, index_col='ruleset')
                     #fill nas with None
                     pipeline = pipeline.where(pd.notnull(pipeline), None)
+                    #fillna in apply_all column with none
+                    pipeline['apply_all'] = pipeline['apply_all'].fillna(False)
                     #drop empty rows and columns
                     #pipeline = pipeline.dropna(axis=0, how = 'all')
                     #convert dataframe to dict list
