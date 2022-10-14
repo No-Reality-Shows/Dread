@@ -112,6 +112,8 @@ def build(directory=None):
             #get folder files
             path = '/'.join([build_dir,'LogicModel'])
             files = os.listdir(path)
+            
+            file = files[0]
             for file in files:
                 file_path = '/'.join([path, file])
                 if os.path.isfile(file_path) and bool(re.match('.*.csv$', file_path)):
@@ -123,6 +125,8 @@ def build(directory=None):
                     ruleset = pd.read_csv(file_path)
                     #fill nas with None
                     ruleset = ruleset.where(pd.notnull(ruleset), None)
+                    #fillnas in score column
+                    ruleset['score'] = ruleset['score'].fillna(0)
                     #drop empty rows
                     ruleset = ruleset.dropna(axis=0, how = 'all')
                     #join rule logic
