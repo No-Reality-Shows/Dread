@@ -55,7 +55,7 @@ class DataModel:
             try:
                 output['value'] = self.dtype(reduce(operator.getitem, self.attribute_path, data))
             except Exception as e:
-                utils.logger.exception('{{"exception":"an error occured while executing attribute [{ATTRIBUTE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(ATTRIBUTE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing attribute [{ATTRIBUTE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(ATTRIBUTE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
                 output['value'] = self.default
                 output['error_type'] = str(type(e).__name__)
                 output['error'] = str(e)
@@ -94,7 +94,7 @@ class DataModel:
                 utils.EVAL_CONFIG['data'] = data
                 output['value'] = self.dtype(eval(self.expression,{"__builtins__": {}}, utils.EVAL_CONFIG))
             except Exception as e:
-                utils.logger.exception('{{"exception":"an error occured while executing expression [{EXPRESSION}],"error_type":"{TYPE}","error":"{ERROR}"'.format(EXPRESSION=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing expression [{EXPRESSION}],"error_type":"{TYPE}","error":"{ERROR}"'.format(EXPRESSION=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
                 output['value'] = self.default
                 output['error_type'] = str(type(e).__name__)
                 output['error'] = str(e)
@@ -164,7 +164,7 @@ class LogicModel:
                 output['error_type'] = str(type(e).__name__)
                 output['error'] = str(e)
                 #log exception
-                utils.logger.exception('{{"exception":"an error occured while executing rule [{RULE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(RULE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing rule [{RULE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(RULE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
             #return output
             return output
 
@@ -250,7 +250,7 @@ class LogicModel:
             except Exception as e:
                 output['error_type'] = str(type(e).__name__)
                 output['error'] = str(e)
-                utils.logger.exception('{{"exception":"an error occured while executing ruleset [{RULESET}],"error_type":"{TYPE}","error":"{ERROR}"'.format(RULESET=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing ruleset [{RULESET}],"error_type":"{TYPE}","error":"{ERROR}"'.format(RULESET=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
     
             #return output
             return output
@@ -323,7 +323,7 @@ class Engine:
                                                           'error_type': result.get('error_type')})
                     
             except Exception as e:
-                utils.logger.exception('{{"exception":"an error occured while executing DataPipeline [{PIPELINE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(PIPELINE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing DataPipeline [{PIPELINE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(PIPELINE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
                 output['pipeline_errors'] = {'pipeline':self.name, 'error':str(e),'error_type': str(type(e).__name__)}
             return output
         
@@ -407,7 +407,7 @@ class Engine:
             except Exception as e:
                 output['error_type'] = str(type(e).__name__)
                 output['error'] = str(e)
-                utils.logger.exception('{{"exception":"an error occured while executing LogicPipeline [{PIPELINE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(PIPELINE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
+                utils.logger.debug('{{"exception":"an error occured while executing LogicPipeline [{PIPELINE}],"error_type":"{TYPE}","error":"{ERROR}"'.format(PIPELINE=self.name,TYPE=str(type(e).__name__), ERROR=str(e)))
     
             #return output
             return data['audit_trail']
