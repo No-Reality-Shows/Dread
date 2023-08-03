@@ -86,7 +86,7 @@ def init(name=None, directory=None):
 \tYay, your first decision engine was built, now it's time to test it.
 \t6:)From python, test rule engine against test files in the TestData directory
 \t\t- 'Dread.engine_test.test' requires JSON formatted data which is read into a python dictionary object which the engine accepts
-\t\t- The outputs from the test execution will be placed in the /TestData/TestResults direcotry
+\t\t- The outputs from the test execution will be placed in the /TestData/TestResults directory
 \t\t- "from Dread.engine_test import test"
 \t\t- "test('{ENGINE}')"
 """.format(ENGINE = engine_name)
