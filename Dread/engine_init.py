@@ -53,14 +53,17 @@ def init(name=None, directory=None):
             os.mkdir('/'.join([build_dir, engine_name, 'TestData', 'TestResults']))
             print('Creating template files for build configuration files for {ENGINE} decision engine'.format(ENGINE=engine_name))
             #ruleset template
+            pd.DataFrame(utils.RULESET_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'LogicModel','ruleset_template.csv']), index=False)
             pd.DataFrame(utils.RULESET_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'Templates','ruleset_template.csv']), index=False)
             #attribute template
             pd.DataFrame(utils.ATTRIBUTE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'DataModel','attributes.csv']), index=False)
             #expression template
             pd.DataFrame(utils.EXPRESSION_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'DataModel','expressions.csv']), index=False)
             #data_pipeline temaplte
+            pd.DataFrame(utils.DATA_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'DataPipelines','data_pipeline_template.csv']), index=False)
             pd.DataFrame(utils.DATA_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'Templates','data_pipeline_template.csv']), index=False)
             #logic_pipeline template
+            pd.DataFrame(utils.LOGIC_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'LogicPiplines','logic_pipeline_template.csv']), index=False)
             pd.DataFrame(utils.LOGIC_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'Templates','logic_pipeline_template.csv']), index=False)
             #template test data
             pd.DataFrame(utils.TEMPLATE_TEST_DATA).to_json('/'.join([build_dir, engine_name,'TestData','template_test_data.json']))
@@ -68,13 +71,14 @@ def init(name=None, directory=None):
             
             steps = """NEXT STEPS:
 \t1:) Create DataModel by adding entries to 'DataModel/attributes.csv' and 'DataModel/expressions.csv' files
-\t2:) Create LogicModel by creating ruleset '.csv' files in 'LogicModel/' directory
-\t\t- A template ruleset file can be found in 'Templates/ruleset_template.csv' directory
-\t3:) Create DataPipeline by creating data pipeline '.csv' files in 'DataPipelines/' directory
-\t\t- A template data pipeline file can be found in 'Templates/data_pipeline_template.csv' directory
+\t\t- Example entries already existing within these files
+\t2:) Create LogicModel by creating ruleset '.csv' files in the 'LogicModel/' directory
+\t\t- A template ruleset file 'ruleset_template.csv' can be found in 'LogicModel/' and 'Templates/' directories
+\t3:) Create DataPipeline by creating data pipeline '.csv' files in the 'DataPipelines/' directory
+\t\t- A template data pipeline file 'data_pipeline_template.csv' can be found in 'DataPipelines' and 'Templates/' directories
 \t\t- Multiple files will result multiple DataPipelines within the rule engine
-\t4:) Create LogicPipeline by creating logic pipeline '.csv' files in 'LogicPipelines/' directory
-\t\t- A template data pipeline file can be found in 'Templates/data_pipeline_template.csv' directory
+\t4:) Create LogicPipeline by creating logic pipeline '.csv' files in the 'LogicPipelines/' directory
+\t\t- A template logic pipeline file 'logic_pipeline_template.csv' can be found in 'LogicPipelines/' and 'Templates/' directories
 \t\t- Multiple files will result multiple LogicPipelines within the rule engine
 \t5:) From python, build decision engine which will create the decision engine file {ENGINE}.pkl
 \t\t- "from Dread.engine_build import build"
