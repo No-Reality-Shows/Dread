@@ -99,8 +99,9 @@ init()
 SPECIFY PARAMETERS:
 ...Please specify NAME for decision engine (REQUIRED): test_engine
 ...Please specify DIRECTORY for build configuration files (ENTER to skip and use current directory): [ENTER]
-
-OUTPUT:
+```
+**OUTPUT:**
+```
 Creating directories for build configuration files for test_engine decision engine
 Creating template files for build configuration files for test_engine decision engine
 Directories and template files created for test_engine
@@ -135,8 +136,9 @@ from python, run ...
 from Dread.engine_build import build
 
 build('test_engine')
-
-OUTPUT:
+```
+**OUTPUT:**
+```
 Building test_engine decision engine from 'test_engine'
 Engine intitiated
         Configuring DataModel
@@ -163,8 +165,9 @@ from python, run ...
 from Dread.engine_test import test
 
 test('test_engine')
-
-OUTPUT:
+```
+**OUTPUT:**
+```
 Testing decision engine 'test_engine' against files in 'test_engine/TestData'
 Test file 'template_test_data.json' processed
 Decision engine testing complete, navigate to '/TestResults' directory to review results of test files
