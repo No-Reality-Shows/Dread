@@ -3,6 +3,9 @@ Dread (Decision Rule Engine for Actioning Data) is a python package for creating
 
 Please note, this documentation is still a work in progress...
 
+# Dependencies
+Work in progress...
+
 # Installation
 Install from github
 ```
@@ -18,6 +21,7 @@ git clone https://github.com/No-Reality-Shows/Dread.git
 First, the basics. Dread decision engines are comprised of a handful of core components in a hierarchical structure. All components can be used seperately, but the "engine" is all of them working together. Below is the hierarchical structure and components of a Dread decision engine.
 
 #### Decision Engine Hierarchy
+```
 L1 - DataModel
         L2 - Attributes
         L2 - Expressions
@@ -26,6 +30,7 @@ L1 - LogicModel
         L2 - RuleSet
                 L3 - Rule
 L1 - LogicPipelines
+```
 
 #### Decision Engine Components
 - **DataModel** - The DataModel is an object comprised of attributes and expressions. It is meant to provide the means to extract, transform, and format data within the input dictionary object to make it suitable for the LogicModels. Only data extracted by the DataModel can be used within the LogicModel.
@@ -48,11 +53,13 @@ Dread can be used within any .py file to build and configure decision engines, h
 
 ### File Based
 
-#### Notes on File Based Approach
+#### Helpful Notes
 
 The file based approach keeps all of the configurations for the decision engine in .csv files. These files can be manipulated followed by an engine build to generate a new decision engine. The required files must keep a particular structure in order for the engine build process to work properly.
 
 #### File types and Formating by directory
+
+Work in progress...
 
 ***Any filename wrapped in square brackets means the name of the file is dynamic and can change. This generally because of the one to many relationshp for the objects within the decision engine. The only filenames that CANNOT change are those within the DataModel directory. The attributes.csv and expressions.csv files.***
 
