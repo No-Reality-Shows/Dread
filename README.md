@@ -5,7 +5,12 @@ More documentation to come...
 
 # Installation
 #install from github
+```
 pip install git+https://github.com/No-Reality-Shows/Dread.git
-    
+``` 
 #or just clone to working directory
-git clone
+```
+git clone https://github.com/No-Reality-Shows/Dread.git
+```
+# Quickstart
+1.) Navigate to directory
