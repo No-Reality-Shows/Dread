@@ -183,7 +183,7 @@ ALLOWED_BUILTINS = {'ArithmeticError': ArithmeticError,
 
 TEMPLATE_TEST_DATA = {'level1':{'level2':{'level3':'test_data'}}}
 
-ATTRIBUTE_TEMPLATE = {'name':['example_attr_name'], 'attribute_path':[['level1','level2','level3']], 'dtype':['str'], 'default':['missing']}
+ATTRIBUTE_TEMPLATE = {'name':['example_attr_name'], 'attribute_path':['level1,level2,level3'], 'dtype':['str'], 'default':['missing']}
 
 EXPRESSION_TEMPLATE = {'name':['example_expr_name'], 'expression':["data['example_attr_name'].upper()"], 'dtype':['str'], 'default':['MISSING']}
 
