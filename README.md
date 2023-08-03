@@ -1,7 +1,7 @@
 # Dread
 Dread (Decision Rule Engine for Actioning Data) is a python package for creating, managing, executing a pythonic rule engine to make data driven decisions and take actions on those decisions.
 
-More documentation to come...
+Please note, this documentation is still a work in progress...
 
 # Installation
 Install from github
@@ -12,11 +12,60 @@ or just clone to working directory, sometimes I think this is easier
 ```
 git clone https://github.com/No-Reality-Shows/Dread.git
 ```
+
+#### Dread Decision Engine Components and Structure
+
+First, the basics. Dread decision engines are comprised of a handful of core components in a hierarchical structure. All components can be used seperately, but the "engine" is all of them working together. Below is the hierarchical structure and components of a Dread decision engine.
+
+#### Decision Engine Hierarchy
+L1 - DataModel
+        L2 - Attributes
+        L2 - Expressions
+L1 - DataPipelines
+L1 - LogicModel
+        L2 - RuleSet
+                L3 - Rule
+L1 - LogicPipelines
+
+#### Decision Engine Components
+- **DataModel** - The DataModel is an object comprised of attributes and expressions. It is meant to provide the means to extract, transform, and format data within the input dictionary object to make it suitable for the LogicModels. Only data extracted by the DataModel can be used within the LogicModel.
+  - Attributes - Attributes are objects that extract and format data from the input dictionary object. Attributes can "climb the tree" of the dictionary object by specifying the path as a list. (I tried dot notation, but couldn't quite get it to work without more dependencies, but's effectively the same thing in list format)
+  - Expressions - Expressions are objects that take data from the input dictionary object or attributes and do something with it to create an output. They can apply Dread configured functions (see Dread component Dread.functions below), logic, do math, and make other maniupuations to get the input data in the desired format. Although expressions are used within a try/except block, they are to be used with caution and tested thoroughly.
+- **DataPipelines** - DataPipelines control what attributes and expressions from the DataModel are executed along with their priority. Attributes and Expressions must exist in a DataPipeline in order to be used by the LogicModel.
+- **LogicModel**  - The LogicModel is an object comprised of RuleSets, which are comprised of Rules. It holds all of the logic that gets applied within the decision engine. There can be many RuleSets within a LogicModel.
+  - RuleSet - RuleSets are objects comprised of Rule objects kept in priority order.
+     - Rule - Rules are objects that contain the core logic being executed within the decision engine along with any associated score values and flags that are applied when evaluated to True. 
+- **LogicPipelines** - LogicPipelines control what RuleSets from the LogicModel are executed along with their priority. A RuleSet must exist in a LogicPipeline in order to be used by the LogicModel.
+
+#### Other Dread Modules
+- **Dread.config** - Used to configure decision engine and its execution.
+- **Dread.functions** - Used as a placeholder to put custom functions which can use other packages and libraries.
+- **Dread.utils** - Utility functions for the Dread package.
+
 # Getting Started
 
-Dread can be used within any .py file to build and configure decision engines, however this can be cumbersome and on the more advanced side, so there is a built-in file based approach to make building and configuring decision engines easier. It is suggested you use the file based approach first and then go from there. I'm a big proponent of learning by doing, so let's do some sh*t.
+Dread can be used within any .py file to build and configure decision engines, however this can be cumbersome and on the more advanced side, so there is a built-in file based approach to make building and configuring decision engines easier. It is suggested you use the file based approach first and then go from there. I'm a big proponent of learning by doing, so let's do something.
 
 ### File Based
+
+#### Notes on File Based Approach
+
+The file based approach keeps all of the configurations for the decision engine in .csv files. These files can be manipulated followed by an engine build to generate a new decision engine. The required files must keep a particular structure in order for the engine build process to work properly.
+
+#### File types and Formating by directory
+
+***Any filename wrapped in square brackets means the name of the file is dynamic and can change. This generally because of the one to many relationshp for the objects within the decision engine. The only filenames that CANNOT change are those within the DataModel directory. The attributes.csv and expressions.csv files.***
+
+DataModel - Files in the /DataModel directory are used to create the DataModel within the decision engine. The names of these files CANNOT change.
+ - attributes.csv
+ - expressions.csv
+DataPipelines - Files in the /DataPipelines directory create the data pipeline objects within the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
+ - [DATA_PIPELINE_NAME].csv
+LogicModel - Files in the /LogicModel directory are used to create the LogicModel within the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
+- [RULESET_NAME].csv
+LogicPipelines- Files in the /LogicPipeline directory create the logic pipelines for the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
+- ['LOGIC_PIPELINE_NAME'].csv - Files in the DataPipeline directory create the data pipelines for the decision engine. The filenames can change and become the name of the pipeline within the decision engine.  
+
 #### 1.) Create and navigate to directory.
 ```
 #create directory
@@ -141,47 +190,12 @@ Now that we know what happened, let's talk about the test results. If you open a
       - .audit_trail.LogicPipelines.[LOGIC_PIPELINE_NAME].rulesets.[RULESET_NAME].errors - This is a list that captures any errors that occured while processing the ruleset.
       - .audit_trail.LogicPipelines.[LOGIC_PIPELINE_NAME].rulesets.[RULESET_NAME].rules - An object of all rules executed within the ruleset. The rule attributes should be pretty self explainatory at this point.
 
-#### Decision Engine Components and Structure
-
-Similar to the decision engine results, a Dread decision engine is comprised of a handful of core components in a hierarchical structure. All components can be used seperately, but he "engine" is all of them working together. Again, I'll do my best to explain this.  
-
-#### Engine Components and Structure -- Work in progress
-- **DataModel** - The DataModel is an object comprised of attributes and expressions. It is meant to provide the means to extract, transform, and format data within the input dictionary object to make it suitable for the LogicModels. Only data extracted by the DataModel can be used within the LogicModel.
-  - Attributes - Attributes are objects that simply extract and format data from the input dictionary object. Attributes can "climb the tree" of the dictionary object by specifying the path as a list. (I tried dot notation, but couldn't quite get it to work without more dependencies, but's effectively the same thing in list format)
-    - ***Attributes***
-    - name - (str; required) - The name of the attribute.
-    - attribute_path - (list; required) - The path to the attribute in the input data. It can
-    - dtype - (type; required) - The desired datatype for the attribute.
-    - default - (varies; required) - The default value for the attribute. Should match the attribute datatype.
-  - Expressions - Expressions are objects that take data from the input dictionary object or attributes and do something with it to create an output. They can apply Dread configured functions (see Dread component Dread.functions below), logic, do math, and make other maniupuations to get the input data in the desired format. Although expressions are used within a try/except block, they are to be used with caution and tested thoroughly.
-    - ***Attributes***
-    - name - (str; required) - The name of the expression.
-    - expression - (str; requied) - The expression string to be executed.
-    - default - (varies; required) - The default value for the expression. 
-- **DataPipelines** - DataPipelines simply control what attributes and expressions from the DataModel are executed along with their priority. Attributes and Expressions must exist in a DataPipeline in order to be used by the LogicModel.
-   - ***Attributes***
-   - name - (str; required) - The name of the pipeline.
-   - pipeline (list; requied) - A list of dictionaries specifiying the attributes and expresseions to apply to the input data.
-- **LogicModel**  - The LogicModel is an object comprised of RuleSet, which are comprised of Rules. It holds all of the logic that gets applied within the decision engine. There can be many RuleSet within a LogicModel.
-  - RuleSet - Rulesets are comprised of rules. Rules hold the core logic being executed.
-  - ***Attributes***
-     - name - (str; required) - The name of the rulset.
-     - rules - (np.array; required) - An array of rule objects.
-     - Rules - 
-     - Actions
-- **LogicPipelines**
-
-#### Dread Components
-- **Dread.config**
-- **Dread.functions**
-- **Dread.utils**
-
 #### Conclusions
-Wow, that was a lot, but I had to go over it. Hopefully you can start to understand the results of the decision engine, but also start to understand how the decision engine works. 
+Wow, that was a lot, but I had to go over it. Hopefully you can start to understand the results of the decision engine, but also start to understand how the decision engine works along with its benefits and limitations. 
 
 # Advanced - Pure Python Implementation
 
-coming soon...maybe...you can figure it out
+Coming soon...maybe...you can figure it out, I believe in you
     
 
 
