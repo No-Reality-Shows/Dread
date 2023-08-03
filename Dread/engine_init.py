@@ -63,7 +63,7 @@ def init(name=None, directory=None):
             pd.DataFrame(utils.DATA_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'DataPipelines','data_pipeline_template.csv']), index=False)
             pd.DataFrame(utils.DATA_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'Templates','data_pipeline_template.csv']), index=False)
             #logic_pipeline template
-            pd.DataFrame(utils.LOGIC_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'LogicPiplines','logic_pipeline_template.csv']), index=False)
+            pd.DataFrame(utils.LOGIC_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'LogicPipelines','logic_pipeline_template.csv']), index=False)
             pd.DataFrame(utils.LOGIC_PIPELINE_TEMPLATE).to_csv('/'.join([build_dir, engine_name, 'Templates','logic_pipeline_template.csv']), index=False)
             #template test data
             pd.DataFrame(utils.TEMPLATE_TEST_DATA).to_json('/'.join([build_dir, engine_name,'TestData','template_test_data.json']))
