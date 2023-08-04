@@ -560,7 +560,5 @@ result_new = engine_new.execute(test_data)
 print(result_new)
 ```
 
-Coming soon...maybe...you can figure it out, I believe in you
-    
-
-
+# Advanced
+Coming soon...
