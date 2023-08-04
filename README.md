@@ -6,6 +6,12 @@ Please note, this documentation is still a work in progress...
 # Dependencies
 Work in progress...
 
+- Numpy - is the main one. Anything over 1.19.2 should work but I haven't fully tested this yet
+- Pandas - is also a dependency if you are using the file based approach. Anything over 1.1.3 should work, but again, I haven't fully tested this yet
+- joblib - is also a dependency if you are using the file based approach. Anything over 0.17.0 should work, but again, I haven't fully tested this yet
+
+The rest of the libraries used should be part of the Python Standard Library.
+
 # Installation
 Install from github
 ```
