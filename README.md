@@ -59,22 +59,49 @@ The file based approach keeps all of the configurations for the decision engine 
 
 #### File types and Formating by directory
 
-Work in progress...
-
 ***Any filename wrapped in square brackets means the name of the file is dynamic and can change. This is generally because of one to many relationships for the objects within the decision engine. The only filenames that CANNOT change are those within the DataModel directory, the attributes.csv and expressions.csv files.***
 
 DataModel - Files in the /DataModel directory are used to create the DataModel within the decision engine. The names of these files CANNOT change.
- - attributes.csv
- - expressions.csv
+ - attributes.csv - Entries in this file create Attribute objects in the DataModel within the decision engine.
+   - name (required) - The name of the attribute (e.g. example_attribute_str).
+   - attribute_path (required) - The path to the attribute in the input data dictionary as a comma seperated list (e.g. level1,level2,string).
+   - dtype (required) - The python datatype for the attribute (e.g. str).
+   - default - The default value for the attribute. This is applied if the attribute does not exist in the input dictionary data or there is an error while extracting or casting the datatype. If a default is not provided Nonetype is used.
+ - expressions.csv - Entries in this file create Expression objects in the DataModel within the decision engine.
+   - name (required) - The name of the attribute (e.g. example_expression_format_str).
+   - expression (required) - The expression string to evaluate (e.g. data['example_attribute_str'].upper()). See 'Writing Expressions" below for more details.
+   - dtype (required) - The python datatype for the expression result (e.g. str).
+   - default - The default value for the expression. This is applied if the expression evaluation fails. If a default is not provided Nonetype is used.
 
-DataPipelines - Files in the /DataPipelines directory create the data pipeline objects within the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
+DataPipelines - Files in the /DataPipelines directory create the DataPipeline objects within the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
  - [DATA_PIPELINE_NAME].csv
+   - type (required) - The type of data pipeline object (e.g. attributes). This is either "attributes" or "expressions". The build will fail if any other value is used.
+   - name (required) - The name of the data model object (e.g. example_attribute_str) to add to the pipeline.
+- Items in the data pipeline file are added in priority order. In the filebased approch the priority is determined by the row number, excluding the header row. Priority is important when you are trying to apply expressions to attributes or results of other expressions in the data pipeline.
 
-LogicModel - Files in the /LogicModel directory are used to create RuleSets in the LogicModel of the decision engine. They contain the rule logic and are essentially decision tables, if you're familiar with other types rule engines, but more flexible. The filenames can change and will become the name of the RuleSet within the decision engine. 
+LogicModel - Files in the /LogicModel directory are used to create RuleSets in the LogicModel of the decision engine. They contain the rule logic and are essentially decision tables if you're familiar with other types rule engines, but more flexible. The filenames can change and will become the name of the RuleSet within the decision engine. 
 - [RULESET_NAME].csv
+  - name (required) - The name of the rule (e.g. example_rule1).
+  - score - The score to apply if the rule evalutes to True (e.g. 1000). If no score is provided 0 is used.
+  - flag - The flag to apply if the rule evaluates to True (e.g. example_flag). If no flag is provided Nonetype is used.
+  - logic (required) - The logic to evalute (e.g. data['example_attribute_str'] == 'test_data'). See 'Writing Rules" below for more details.
+- In the file based approach Rule logic can be provided in multiple columns of the RuleSet file if desired. This makes organizing logic easier. Simply add another column and input the logic in the desired rule row. Multiple columns of logic are joined together with an "AND" condition. The name for the logic columns does not really matter, but they cannot be "name", "score", or "flag". However, I suggest keeping it simple and continue to use "logic" for the header of additional columns.
+- EXAMPLE - A new column of logic was added for "example_rule2". This rule will be interpreted as "(data['example_expression_math'] < 1) and (ata['example_attribute_int'] > 0)"
+```
+|    | name          |   score | flag         | logic                                        | logic                             |
+|---:|:--------------|--------:|:-------------|:---------------------------------------------|:----------------------------------|
+|  0 | example_rule1 |     100 | example_flag | data['example_attribute_str'] == 'test_data' |                                   |
+|  1 | example_rule2 |      50 |              | data['example_expression_math'] < 1          | data['example_attribute_int'] > 0 |
+```
 
 LogicPipelines- Files in the /LogicPipeline directory create the logic pipelines for the decision engine. The filenames can change and will become the name of the pipeline within the decision engine. 
-- ['LOGIC_PIPELINE_NAME'].csv - Files in the DataPipeline directory create the data pipelines for the decision engine. The filenames can change and become the name of the pipeline within the decision engine.  
+- ['LOGIC_PIPELINE_NAME'].csv
+  - ruleset (required) - The name of the ruleset (e.g. ruleset_template). In the file based approach this should be the name of the file/s in the /LogicModel directory.
+  - action - The name of the action to execute if the rule evalutes to True (e.g. get_time).
+  - score_override - The score to apply if the RuleSet evalutes to True (e.g. 1000). This will override any score values for individual rules. If no score is provided 0 is used.
+  - flag_override - The flag to apply if the RuleSet evaluates to True (e.g. example_flag). This will override any flag values for individual rules. If no flag is provided Nonetype is used.
+  - apply_all - An additional parameter to control whether all rules within the RuleSet should be applied. If no value is provided False is used, meaning the RuleSet execution stops following the first True evaluation.
+
 
 #### 1.) Create and navigate to directory.
 ```
@@ -325,12 +352,213 @@ A couple quick notes...
 Wow, that was a lot, but we had to go over it. Hopefully you can start to understand the results of the decision engine, but also start to understand how the decision engine works along with its benefits and limitations. 
 
 # Writing Rules
-Coming Soon
+Writing rules for a Dread decision engine is like writing any logic in python with a few caveats. You can look for conditions, values in lists, apply expressions, compare attributes/expressions, and even apply Dread configured functions directly in rule logic.
+
+- Only attributes and expressions from the DataModel can be used in rules.
+- To reference DataModel attributes and expressions simply treat it like a dictionary object with the name "data".
+  - EXAMPLE
+    - data['example_attribute_str'] will reference the 'example_attribute_str' attribute from our getting started example (data.get('example_attribute_str') will also work).
+    - data['example_expression_math'] will reference the 'example_expression_math' expression from our getting started example (data.get('example_expression_math') will also work).
+- Be careful with your order of operations. When in doubt use parentheses.
+- Be careful with single and double quotes.
+- The execution of logic within a Dread decision engine is heavily controlled to prevent misuse. Only methods for the datatypes begin executed are allowed by default (i.e. str.upper) along with a handful of default python libraries.
+  - This behavior can be controlled in the Dread.config module by modifying the EXTERNAL_MODULES and ALLOWED_BUILTINS.
+
+Examples of rules
+- "data['some_attribute'] >= 5"
+- "data['some_attribute'] >= 5 and data['some_attribute'] < 10"
+- "(data['some_attribute'] >= 5 and data['some_attribute'] < 10) or (data['some_attribute'] >= 20 and data['some_attribute'] < 30)"
+- "data['some_attribute'] == 'some_value'"
+- "data['some_attribute'] in data['some_list']"
+- "data['some_attribute'].upper() == 'SOME_VALUE'"
+- "(data['some_attribute'] / 100) > 1"
+- "data['some_attribute'] > data['some_other_attribute']"
+- "Dread.functions.some_function(data['some_attribute']) > 1"
 
 # Writing Expressions
-Coming Soon
+Writing expressions for a Dread decision engine is very similar to writing rules and also like writing any expression python with a few caveats.
+
+- Only data from the input dictionary object and prior extracted attributes or expressions from the DataModel can be used in expressions.
+- To reference data from the input dictionary objec or DataModel attributes and expressions simply treat it like a dictionary object with the name "data".
+  - EXAMPLE
+    - data['level1]['level2']['string'] will reference the 'string' field in the input data dictionary from our getting started example.
+    - data['example_attribute_str'] will reference the 'example_attribute_str' attribute from our getting started example (data.get('example_attribute_str') will also work).
+    - data['example_expression_math'] will reference the 'example_expression_math' expression from our getting started example (data.get('example_expression_math') will also work).
+- Be careful with your order of operations. When in doubt use parentheses.
+- Be careful with single and double quotes.
+- The execution of expressions within a Dread decision engine is heavily controlled to prevent misuse. Only methods for the datatypes begin executed are allowed by default (i.e. str.upper) along with a handful of default python libraries.
+  - This behavior can be controlled in the Dread.config module by modifying the EXTERNAL_MODULES and ALLOWED_BUILTINS.
+
+Examples of rules
+- "data['some_attribute'] * 10"
+- "data['some_attribute'] / data['some_other_attribute']"
+- "data['some_attribute'].upper()"
+- "Dread.functions.some_function(data['some_attribute'])"
 
 # Advanced - Pure Python Implementation
+```
+#import Dread decision_engine module
+from Dread import decision_engine
+
+##############################################################################
+#initiate decision engine
+##############################################################################
+
+engine = decision_engine.Engine('foo')
+
+##############################################################################
+#add attributes to data model
+##############################################################################
+
+#add example_attribute_str attribute
+engine.data_model.add_attribute(name='example_attribute_str', 
+                                attribute_path = ['level1','level2','string'],
+                                dtype = str,
+                                default = 'missing')
+
+
+#add example_attribute_int attribute
+engine.data_model.add_attribute(name='example_attribute_int', 
+                                attribute_path = ['level1','level2','integer'],
+                                dtype = int,
+                                default = 0)
+
+#add example_attribute_float attribute using params dictionary
+attr_params = {'name':'example_attribute_float',
+          'attribute_path': ['level1','level2','float'],
+          'dtype': float,
+          'default': 0}
+
+
+engine.data_model.add_attribute(**attr_params)
+
+
+##############################################################################
+#add expressions to data model
+##############################################################################
+
+#add example_attribute_str expression
+engine.data_model.add_expression(name='example_expression_format_str', 
+                                expression = "data['example_attribute_str'].upper()",
+                                dtype = str,
+                                default = 'MISSING')
+
+#add example_expression_math expression using params dictionary
+expr_params = {'name':'example_expression_math',
+          'expression': "data['example_attribute_int'] / data['example_attribute_float']",
+          'dtype': float,
+          'default': 0}
+
+engine.data_model.add_expression(**expr_params)
+
+
+#print data model
+print(engine.data_model.model)
+
+##############################################################################
+#add ruleset to logic model
+##############################################################################
+
+#add 'rulset_template' ruleset
+engine.logic_model.add_ruleset('ruleset_template')
+
+#add 'example_rule1' rule to ruleset
+engine.logic_model.model['ruleset_template'].add_rule(name='example_rule1',
+                                                     score=100,
+                                                     flag='example_flag',
+                                                     logic="data['example_attribute_str'] == 'test_data'",
+                                                     )
+
+#add 'example_rule1' rule to ruleset using params dictionary
+rule_params = {'name':'example_rule2',
+          'score': 50,
+          'flag': None,
+          'logic': "data['example_expression_math'] < 1"}
+
+engine.logic_model.model['ruleset_template'].add_rule(**rule_params)
+
+
+#print data model
+print(engine.logic_model.model)
+
+
+##############################################################################
+#add data pipeline
+##############################################################################
+
+#create pipeline
+data_pipeline = [
+                #attributes
+                {'type': 'attributes', 'name': 'example_attribute_str'},
+                {'type': 'attributes', 'name': 'example_attribute_int'},
+                {'type': 'attributes', 'name': 'example_attribute_float'},
+                {'type': 'expressions', 'name': 'example_expression_format_str'},
+                {'type': 'expressions', 'name': 'example_expression_math'}
+                ]
+
+
+#add pipeline to engine
+engine.add_data_pipeline('data_pipeline_template', data_pipeline)
+
+#print data pipeline
+print(engine.data_pipelines)
+
+##############################################################################
+#add logic pipeline
+##############################################################################
+
+#create pipeline
+logic_pipeline = []
+
+logic_pipeline.append({'ruleset':'ruleset_template', 
+                   'params':{'action':'get_time', 
+                             'score_override':0, 
+                             'flag_override':'', 
+                             'apply_all':False}})
+
+
+#add pipeline to engine
+engine.add_logic_pipeline('logic_pipeline_template', logic_pipeline)
+
+
+#print logic pipeline
+print(engine.logic_pipelines)
+
+##############################################################################
+# Yay, we're done, now let's test it
+# testing
+##############################################################################
+
+#create test data
+test_data = {'level1':{'level2':{'string':'test_data', 'integer':1, 'float':1.5}}}
+
+#run test data through engine
+result = engine.execute(test_data)
+
+#print result
+print(result)
+
+##############################################################################
+# saving and loading decision engine
+##############################################################################
+
+import joblib
+
+#save engine to pickle file
+joblib.dump(engine, 'foo_engine.pkl')
+
+#delete engine
+del engine
+
+#load engine
+engine_new = joblib.load('foo_engine.pkl')
+
+#run test data through engine
+result_new = engine_new.execute(test_data)
+
+#print result
+print(result_new)
+```
 
 Coming soon...maybe...you can figure it out, I believe in you
     
