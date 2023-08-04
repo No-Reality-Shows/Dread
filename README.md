@@ -100,14 +100,11 @@ from Dread.engine_init import init
 init()
 
 SPECIFY PARAMETERS:
-...Please specify NAME for decision engine (REQUIRED): test_engine
+...Please specify NAME for decision engine (REQUIRED): foo
 ...Please specify DIRECTORY for build configuration files (ENTER to skip and use current directory): [ENTER]
 ```
 **OUTPUT:**
 ```
-Creating directories for build configuration files for test_engine decision engine
-Creating template files for build configuration files for test_engine decision engine
-Directories and template files created for test_engine
 NEXT STEPS:
         1:) Create DataModel by adding entries to 'DataModel/attributes.csv' and 'DataModel/expressions.csv' files
                 - Example entries already existing within these files
@@ -119,15 +116,15 @@ NEXT STEPS:
         4:) Create LogicPipeline by creating logic pipeline '.csv' files in the 'LogicPipelines/' directory
                 - A template logic pipeline file 'logic_pipeline_template.csv' can be found in 'LogicPipelines/' and 'Templates/' directories
                 - Multiple files will result multiple LogicPipelines within the rule engine
-        5:) From python, build decision engine which will create the decision engine file test_engine.pkl
+        5:) From python, build decision engine which will create the decision engine file foo.pkl
                 - "from Dread.engine_build import build"
-                - "build('test_engine')"
+                - "build('foo')"
         Yay, your first decision engine was built, now it's time to test it.
         6:)From python, test rule engine against test files in the TestData directory
                 - 'Dread.engine_test.test' requires JSON formatted data which is read into a python dictionary object which the engine accepts
                 - The outputs from the test execution will be placed in the /TestData/TestResults directory
                 - "from Dread.engine_test import test"
-                - "test('test_engine')"
+                - "test('foo')"
 ```
 
 #### 4.) Build your first decision engine. 
@@ -138,15 +135,18 @@ from python, run ...
 ```
 from Dread.engine_build import build
 
-build('test_engine')
+build('foo')
 ```
 **OUTPUT:**
 ```
-Building test_engine decision engine from 'test_engine'
+Building foo decision engine from 'foo'
 Engine intitiated
         Configuring DataModel
-                Attribute 'example_attr_name' added to data model
-                Expression 'example_expr_name' added to data model
+                Attribute 'example_attribute_str' added to data model
+                Attribute 'example_attribute_int' added to data model
+                Attribute 'example_attribute_float' added to data model
+                Expression 'example_expression_format_str' added to data model
+                Expression 'example_expression_math' added to data model
         Configuring LogicModel
                 RuleSet 'ruleset_template' added to LogicModel
         Configuring DataPipelines
@@ -154,7 +154,7 @@ Engine intitiated
         Configuring LogicPipelines
                 LogicPipeline 'logic_pipeline_template' added to Engine
 Engine build complete
-Engine saved to 'test_engine/test_engine_engine.pkl'
+Engine saved to 'foo/foo_engine.pkl'
 ```
 
 Congrats, you built your first Dread decision engine. You can see your new engine in a serialized pickle file within your directory. When you finally go to use your decision engine, this is the file you will import to create your Engine object. You can then execute this engine to apply your data and logic models on new data, but we'll get to that.
@@ -167,11 +167,11 @@ from python, run ...
 ```
 from Dread.engine_test import test
 
-test('test_engine')
+test('foo')
 ```
 **OUTPUT:**
 ```
-Testing decision engine 'test_engine' against files in 'test_engine/TestData'
+Testing decision engine 'foo' against files in 'foo/TestData'
 Test file 'template_test_data.json' processed
 Decision engine testing complete, navigate to '/TestResults' directory to review results of test files
 ```
@@ -188,8 +188,11 @@ Now that we know what happened, let's talk about the test results. If you open a
 - **.processed_data** - This is the data after it is processed by the data pipeline. I will explain exactly how this works below, but this is ultimately the data that is fed into the decision engine.
   - .processed_data.datamodel_errors - This is a list that captures any errors while processing the components of your data model.
   - .processed_data.pipeline_errors - This is a list that captures any fatal data pipeline errors, meaning the entire data pipeline fails for some reason. Hopefully you never see anything in here, but if you do, something bad happened.
-  - .processed_data.example_attr_name - This is an attribute extracted from your input data. In this case we simply extracted the data in the "level3" field of the input data.
-  - .processed_data.example_expr_name - This is an expression extracted from your input data. In this case we simply applied the str.upper() method on the attribute "example_attr_name"
+  - .processed_data.example_attribute_str - This is a string attribute extracted from your input data. In this case we simply extracted the data in the "string" field of the input data.
+  - .processed_data.example_attribute_int - This is an integer attribute extracted from your input data. In this case we simply extracted the data in the "integer" field of the input data.
+  - .processed_data.example_attribute_float - This is a float attribute extracted from your input data. In this case we simply extracted the data in the "float" field of the input data.
+  - .processed_data.example_expression_format_str - This is an expression extracted from your input data. In this case we simply applied the str.upper() method on the attribute "example_attribute_str"
+  - .processed_data.example_expression_math - This is an expression extracted from your input data. In this case we simply did some division on the input attributes "example_attribute_int" and "example_attribute_float" (e.g. 1 / 1.5)
   - .processed_data.audit_trail - This is the audit trail from the decision engine. It exists here so you can refer to prior rules, actions, flags, and other components of the DataPipelines and LogicPipelines as the decision engine is processing. This can be a very powerful tool and allow you to chain decisions and actions together.
 - **.audit_trail** - As mentioned above, this is the audit trail from the decision engine. It shows the final results of the decision engine on the input data.
   - .audit_trail.result - The final result of the decision engine. It is a boolean value indicating if any rule within the decision engine was triggered. A value of "True" means at least one rule was triggered.
@@ -204,23 +207,128 @@ Now that we know what happened, let's talk about the test results. If you open a
       - .audit_trail.LogicPipelines.[LOGIC_PIPELINE_NAME].rulesets.[RULESET_NAME].rules - An object of all rules executed within the ruleset. The rule attributes should be pretty self explainatory at this point.
 
 #### Using the decision engine
-Now that the decision engine is created, we can now use it to get results from new data. as mentioned, the file based approach saves the decision engine as a serialized pickle file that can be imported into any .py file.
+Now that the decision engine is created, we can now use it to get results from new data. As mentioned, the file based approach saves the decision engine as a serialized pickle file that can be imported into any .py file. 
 
 from python, run...
 ```
 import joblib
 
-engine = joblib.load([DECISION_ENGINE_FILE].pkl)
+#import engine
+engine = joblib.load('foo/foo_engine.pkl')
 
-new_data = {}
+#new data to process
+new_data = {
+	'level1': {
+		'level2': {
+			'string': "new_test_data",
+			'integer': 5,
+			'float': 2
+		}
+	}
+}
 
+#execute engine on new data
 result = engine.execute(new_data)
 
+#print result
 print(result)
 ```
+**OUTPUT:**
+```
+{
+	'input': {
+		'level1': {
+			'level2': {
+				'string': 'new_test_data',
+				'integer': 5,
+				'float': 2
+			}
+		}
+	},
+	'processed_data': {
+		'datamodel_errors': [],
+		'pipeline_errors': [],
+		'example_attribute_str': 'new_test_data',
+		'example_attribute_int': 5,
+		'example_attribute_float': 2.0,
+		'example_expression_format_str': 'NEW_TEST_DATA',
+		'example_expression_math': 2.5,
+		'audit_trail': {
+			'result': False,
+			'actions': [],
+			'action_results': {},
+			'score': 0,
+			'flags': [],
+			'LogicPipelines': {
+				'logic_pipeline_template': {
+					'result': False,
+					'actions': [],
+					'score': 0,
+					'flags': [],
+					'errors': [],
+					'rulesets': {
+						'ruleset_template': {
+							'result': False,
+							'action': None,
+							'score': 0,
+							'flags': [],
+							'rules': {},
+							'errors': []
+						}
+					}
+				}
+			}
+		}
+	},
+	'audit_trail': {
+		'result': False,
+		'actions': [],
+		'action_results': {},
+		'score': 0,
+		'flags': [],
+		'LogicPipelines': {
+			'logic_pipeline_template': {
+				'result': False,
+				'actions': [],
+				'score': 0,
+				'flags': [],
+				'errors': [],
+				'rulesets': {
+					'ruleset_template': {
+						'result': False,
+						'action': None,
+						'score': 0,
+						'flags': [],
+						'rules': {},
+						'errors': []
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+Awesome, this decision engine is ready to be used for making decisions. 
+
+#### Additional Notes
+A couple quick notes...
+
+- You may have noticed the output when applying the decision engine on the "new_data" did not trigger any rules. This is by design. The input data changed and no longer met the criteria of any of the rules within the decision engine.
+- You may have noticed only one rule shows as triggered in the audit trail from the original test even though multiple rules should have evaluated to True. This is by design. By default, when a RuleSet is being excuted, the first True evaluation cause the entire RuleSet to evaluate to True and no further rules are applied. This makes the decision engine faster and conforms with how most rule engines work. 
+  - This behavior can be modified in the LogicPipeline configuration, so all rules are evaluated. In this scenario, if any of the rules evaluate to True the RuleSet will evalute to True.
+- You also may have noticed the "get_time" action was applied during the original test. This is because there is a "get_time" function configured within the Dread.config module and that action is tied to the "ruleset_template" RuleSet within the LogicPipeline. This is how you take actions based on your decisions.
+  - If an action is applied but not configured in the Dread.config file, it will still show up in the "actions" within the audit_trail, just nothing will be done, obviously.
+  - This can be a very powerful tool. You can also reference the output of actions in other decisions through the "audit_trail". 
 
 #### Conclusions
 Wow, that was a lot, but we had to go over it. Hopefully you can start to understand the results of the decision engine, but also start to understand how the decision engine works along with its benefits and limitations. 
+
+# Writing Rules
+Coming Soon
+
+# Writing Expressions
+Coming Soon
 
 # Advanced - Pure Python Implementation
 
