@@ -7,6 +7,7 @@ Created on Thu Sep 22 08:28:43 2022
 
 import os
 import pandas as pd
+import numpy as np
 import re
 import joblib
 from Dread import utils
@@ -50,7 +51,7 @@ def build(directory=None):
             #read in attributes file
             attributes = pd.read_csv('/'.join([build_dir,'DataModel','attributes.csv']))
             #replace np.nan with None
-            attributes = attributes.where(pd.notnull(attributes), None)
+            attributes = attributes.replace({np.nan: None})
             #drop empty rows and columns
             attributes = attributes.dropna(axis=0, how = 'all')
             attributes = attributes.dropna(axis=1, how = 'all')
@@ -78,7 +79,7 @@ def build(directory=None):
             #read in attributes file
             expressions = pd.read_csv('/'.join([build_dir,'DataModel','expressions.csv']))
             #replace np.nan with None
-            expressions = expressions.where(pd.notnull(expressions), None)
+            expressions = expressions.replace({np.nan: None})
             #drop empty rows and columns
             expressions = expressions.dropna(axis=0, how = 'all')
             expressions = expressions.dropna(axis=1, how = 'all')
@@ -124,7 +125,7 @@ def build(directory=None):
                     #read ruleset data
                     ruleset = pd.read_csv(file_path)
                     #fill nas with None
-                    ruleset = ruleset.where(pd.notnull(ruleset), None)
+                    ruleset = ruleset.replace({np.nan: None})
                     #fillnas in score column
                     ruleset['score'] = ruleset['score'].fillna(0)
                     #drop empty rows
@@ -162,7 +163,7 @@ def build(directory=None):
                     #read in data
                     pipeline = pd.read_csv(file_path)
                     #fill nas with None
-                    pipeline = pipeline.where(pd.notnull(pipeline), None)
+                    pipeline = pipeline.replace({np.nan: None})
                     #drop empty rows and columns
                     pipeline = pipeline.dropna(axis=0, how = 'all')
                     pipeline = pipeline.dropna(axis=1, how = 'all')
@@ -195,7 +196,7 @@ def build(directory=None):
                     #read in data
                     pipeline = pd.read_csv(file_path, index_col='ruleset')
                     #fill nas with None
-                    pipeline = pipeline.where(pd.notnull(pipeline), None)
+                    pipeline = pipeline.replace({np.nan: None})
                     #fillna in apply_all column with none
                     pipeline['apply_all'] = pipeline['apply_all'].fillna(False)
                     #drop empty rows and columns
