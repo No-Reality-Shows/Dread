@@ -2,7 +2,8 @@
 """
 Created on Fri Sep 16 19:21:15 2022
 
-@author: No-Reality-Shows
+@author: Travis Jones
+https://github.com/No-Reality-Shows
 """
 
 import Dread.functions

@@ -2,7 +2,8 @@
 """
 Created on Wed Sep 21 11:17:48 2022
 
-@author: JonTr003
+@author: Travis Jones
+https://github.com/No-Reality-Shows
 """
 
 import os

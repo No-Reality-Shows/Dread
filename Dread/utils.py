@@ -2,7 +2,8 @@
 """
 Created on Fri Sep 16 19:39:46 2022
 
-@author: JonTr003
+@author: Travis Jones
+https://github.com/No-Reality-Shows
 """
 
 #for logging
