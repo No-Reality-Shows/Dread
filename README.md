@@ -46,7 +46,8 @@ L1 - LogicPipelines
 - **LogicModel**  - The LogicModel is an object comprised of RuleSets, which are comprised of Rules. It holds all of the logic that gets applied within the decision engine. There can be many RuleSets within a LogicModel.
   - RuleSet - RuleSets are objects comprised of one or more Rule objects kept in priority order.
      - Rule - Rules are objects that contain the core logic being executed within the decision engine along with any associated score values and flags that are applied when evaluated. 
-- **LogicPipelines** - LogicPipelines control what RuleSets from the LogicModel are executed along with their priority. A RuleSet must exist in a LogicPipeline in order to be used within the engine.
+- **LogicPipelines** - LogicPipelines control what RuleSets from the LogicModel are executed along with their priority and some additional parameters. A RuleSet must exist in a LogicPipeline in order to be used within the engine.
+  - LogicPipelines are also where decisions get tied to actions. More to come on this later.
 
 #### Other Dread Modules
 - **Dread.config** - Used to configure decision engine and its execution.
@@ -568,3 +569,8 @@ print(result_new)
 
 # Advanced
 Coming soon...
+
+#### Using Custom Functoins
+#### Configuring Actions
+#### Updating Execution Configuration
+#### Other stuff I'm forgetting to document
