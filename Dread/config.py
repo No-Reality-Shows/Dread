@@ -181,18 +181,18 @@ ALLOWED_BUILTINS = {'ArithmeticError': ArithmeticError,
 #template objects
 ##############################################################################
 
-TEMPLATE_TEST_DATA = {'level1':{'level2':{'level3':'test_data'}}}
+TEMPLATE_TEST_DATA = {'level1':{'level2':{'string':'test_data', 'integer':1, 'float':1.5}}}
 
-ATTRIBUTE_TEMPLATE = {'name':['example_attr_name'], 'attribute_path':['level1,level2,level3'], 'dtype':['str'], 'default':['missing']}
+ATTRIBUTE_TEMPLATE = {'name':['example_attribute_str', 'example_attribute_int', 'example_attribute_float'], 'attribute_path':['level1,level2,string', 'level1,level2,integer', 'level1,level2,float'], 'dtype':['str', 'int', 'float'], 'default':['missing', 0, 0]}
 
-EXPRESSION_TEMPLATE = {'name':['example_expr_name'], 'expression':["data['example_attr_name'].upper()"], 'dtype':['str'], 'default':['MISSING']}
+EXPRESSION_TEMPLATE = {'name':['example_expression_format_str', 'example_expression_math'], 'expression':["data['example_attribute_str'].upper()", "data['example_attribute_int'] / data['example_attribute_float']"], 'dtype':['str', 'float'], 'default':['MISSING', 0]}
 
-RULESET_TEMPLATE = {'name':['example_rule1_name','example_rule2_name'],
+RULESET_TEMPLATE = {'name':['example_rule1','example_rule2'],
                     'score':[100,50],
-                    'flag':['example_flag_missing', 'example_missing'],
-                    'logic':["data['example_attr_name'] == 'test_data'",
-                             "data['example_expr_name'] != 'TEST_DATA'"]}
+                    'flag':['example_flag', None],
+                    'logic':["data['example_attribute_str'] == 'test_data'",
+                             "data['example_expression_math'] < 1"]}
 
-DATA_PIPELINE_TEMPLATE = {'type':['attributes','expressions'],'name':['example_attr_name', 'example_expr_name']}
+DATA_PIPELINE_TEMPLATE = {'type':['attributes','attributes','attributes','expressions', 'expressions'],'name':['example_attribute_str', 'example_attribute_int', 'example_attribute_float', 'example_expression_format_str', 'example_expression_math']}
 
 LOGIC_PIPELINE_TEMPLATE = {'ruleset':['ruleset_template'], 'action':['get_time'], 'score_override':[''], 'flag_override':[''], 'apply_all':[False]}
