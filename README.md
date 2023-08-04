@@ -389,7 +389,7 @@ Writing expressions for a Dread decision engine is very similar to writing rules
 - The execution of expressions within a Dread decision engine is heavily controlled to prevent misuse. Only methods for the datatypes begin executed are allowed by default (i.e. str.upper) along with a handful of default python libraries.
   - This behavior can be controlled in the Dread.config module by modifying the EXTERNAL_MODULES and ALLOWED_BUILTINS.
 
-Examples of rules
+Examples of expressions
 - "data['some_attribute'] * 10"
 - "data['some_attribute'] / data['some_other_attribute']"
 - "data['some_attribute'].upper()"
